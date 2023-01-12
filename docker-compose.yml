@@ -39,12 +39,14 @@ services:
     image: elasticsearch:8.6.0
     container_name: search-engine
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - target: 9200
+        published: 9200
     volumes:
-      - "/home/webshop-product-search/search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+      - "./search-engine/data:/usr/share/elasticsearch/data"
     environment:
       - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.security.enabled=false
     networks:
       search-engine:
         aliases:
@@ -107,7 +109,12 @@ services:
       - search-engine
     restart: always
     networks:
-      - aaa-network
+      search-engine:
+        aliases:
+          - kibana
+      aaa-network:
+        aliases:
+          - kibana
 networks:
     reverse-proxy:
     cache-engine:
