@@ -1,5 +1,11 @@
 version: '3.7'
 services:
+  permissions:
+    build: .
+    command:
+      - sudo chown -R 1000:1000 /usr/share/elasticsearch/data
+      - sudo chown -R 1000:1000 /usr/share/elasticsearch/config
+      - sudo chown -R 1000:1000 /usr/share/elasticsearch/config/elasticsearch.yml
   nginx-proxy-manager:
     image: "jc21/nginx-proxy-manager:latest"
     ports:
@@ -11,6 +17,7 @@ services:
       - "./nginx/letsencrypt:/etc/letsencrypt"
     restart: "always"
     depends_on:
+      - permissions
       - cache-engine
       - search-engine
       - redis-commander
