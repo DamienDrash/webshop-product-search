@@ -105,9 +105,6 @@ services:
     restart: always
     networks:
       - aaa-network
-volumes:
-  search-engine:
-    driver: local
 networks:
     reverse-proxy:
     cache-engine:
