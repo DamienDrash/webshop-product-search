@@ -125,7 +125,6 @@ services:
           - kibana
 volumes:
   pip37:
-    external: true
 networks:
     reverse-proxy:
     cache-engine:
