@@ -41,9 +41,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     volumes:
-      - "./search-engine/data:/usr/share/elasticsearch/data"
       - "./search-engine/config:/usr/share/elasticsearch/config"
-      - "./search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
     command:
       - sudo chown -R 1000:1000 /usr/share/elasticsearch/data
       - sudo chown -R 1000:1000 /usr/share/elasticsearch/config
