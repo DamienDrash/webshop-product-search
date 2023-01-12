@@ -43,6 +43,8 @@ services:
     volumes:
       - "./search-engine/data:/usr/share/elasticsearch/data"
       - "./search-engine/config:/usr/share/elasticsearch/config"
+      - "./search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+
     environment:
       - discovery.type=single-node
     networks:
