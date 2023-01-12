@@ -1,10 +1,5 @@
 version: '3.7'
 services:
-  permissions:
-    build: .
-    command:
-      - sudo chown -R 1000:1000 /usr/share/elasticsearch/data
-      - sudo chown -R 1000:1000 /usr/share/elasticsearch/config
   nginx-proxy-manager:
     image: "jc21/nginx-proxy-manager:latest"
     ports:
@@ -49,23 +44,8 @@ services:
       - "./search-engine/data:/usr/share/elasticsearch/data"
       - "./search-engine/config:/usr/share/elasticsearch/config"
       - "./search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-    command:
-      - sudo chown -R 1000:1000 /usr/share/elasticsearch/data
-      - sudo chown -R 1000:1000 /usr/share/elasticsearch/config
     environment:
-      - xpack.security.enabled=false
       - discovery.type=single-node
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    cap_add:
-      - IPC_LOCK
-    depends_on:
-      - permissions
     networks:
       search-engine:
         aliases:
@@ -127,7 +107,9 @@ services:
     restart: always
     networks:
       - aaa-network
-
+volumes:
+  search-engine:
+    driver: local
 networks:
     reverse-proxy:
     cache-engine:
