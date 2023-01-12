@@ -67,11 +67,13 @@ services:
     ports:
       - "5000:5000"
     volumes:
+      - pip37:/usr/local/lib/python3.7/site-packages
       - "./api:/app"
     command: "python /app/app.py"
     depends_on:
       - search-engine
       - cache-engine
+      - requirements
     networks:
       api:
         aliases:
@@ -80,6 +82,13 @@ services:
         aliases:
           - api
     restart: always
+  requirements:
+    image: python:3.7-alpine
+    volumes:
+      - pip37:/usr/local/lib/python3.7/site-packages
+      - ./api:/project
+    working_dir: /project
+    command: pip install -r requirements.txt
   web:
     image: nginx:latest
     ports:
@@ -122,6 +131,9 @@ services:
       aaa-network:
         aliases:
           - kibana
+volumes:
+  pip37:
+    external: true
 networks:
     reverse-proxy:
     cache-engine:

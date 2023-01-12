@@ -1,9 +1,7 @@
 import json
 import pyexasol
 import elasticsearch
-from elasticsearch_dsl.field import Completion
-from elasticsearch_dsl.search import Search
-from elasticsearch_dsl import analyzer, connections
+from elasticsearch_dsl import connections
 import redis
 import configparser
 
@@ -59,7 +57,7 @@ class ProductSearch:
             self.es.indices.delete(index='products')
 
         # Create the index if it does not exist
-        self.es.indices.create(index='products', ignore=400)
+        self.es.indices.create(index='products')
 
     def load_products(self):
         # Ergebnisse der Abfrage abrufen
@@ -218,7 +216,7 @@ class ProductSearch:
 
 if __name__ == '__main__':
     with ProductSearch() as search:
-        search.init_index()
+        # search.init_index()
         # search.load_products()
         # search.update_mapping()
-        # print(search.get_suggestions('satisfyer'))
+        print(search.get_suggestions('satis'))

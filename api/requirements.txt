@@ -1,2 +1,7 @@
+pyexasol
 elasticsearch
-nltk
+elasticsearch-dsl
+redis
+configparser
+flask
+flask-cors
