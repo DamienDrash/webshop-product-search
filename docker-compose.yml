@@ -39,6 +39,7 @@ services:
     image: elasticsearch:7.17.8
     ports:
       - "9200:9200"
+      - "9300:9300"
     volumes:
       - "./search-engine/data:/usr/share/elasticsearch/data"
       - "./search-engine/config:/usr/share/elasticsearch/config"

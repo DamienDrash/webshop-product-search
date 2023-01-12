@@ -1,6 +1,6 @@
 import flask
 from flask_cors import CORS
-import product_search
+import src.product_search as product_search
 
 app = flask.Flask(__name__)
 search = product_search.ProductSearch()

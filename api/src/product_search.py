@@ -5,20 +5,27 @@ from elasticsearch_dsl.field import Completion
 from elasticsearch_dsl.search import Search
 from elasticsearch_dsl import analyzer, connections
 import redis
+import configparser
+
+config = configparser.ConfigParser()
+config.read('config.ini')
 
 
 class ProductSearch:
     def __init__(self):
         # Verbindung mit der Exasol-Datenbank herstellen
-        self.conn = pyexasol.connect(dsn=[HOST:PORT], user=[USER], password=[PASSWORD])
+        self.conn = pyexasol.connect(dsn=f"{config['DWH']['Host']}:{config['DWH']['Port']}", user=config['DWH']['User'],
+                                     password=config['DWH']['Password'])
 
         # Verbindung mit Elasticsearch herstellen
-        self.es = elasticsearch.Elasticsearch(hosts=[[SCHEMA://HOST:PORT]])
+        self.es = elasticsearch.Elasticsearch(hosts=[
+            f"{config['ELASTICSERACH']['Schema']}://{config['ELASTICSERACH']['Host']}:{config['ELASTICSERACH']['Port']}"])
         # self.es = elasticsearch.Elasticsearch(URL, http_auth=('elastic', ELASTIC_PASSWORD), verify_certs=False)
         connections.add_connection('default', self.es)
 
         # Verbindung mit Redis-Cache herstellen
-        self.cache = redis.Redis(host=[HOST], port=[PORT], db=0)
+        self.cache = redis.Redis(host=str(config['REDIS']['Host']), port=int(config['REDIS']['Port']),
+                                 db=int(config['REDIS']['DB']))
 
         self.query = """
         SELECT
@@ -211,7 +218,7 @@ class ProductSearch:
 
 if __name__ == '__main__':
     with ProductSearch() as search:
-        #search.init_index()
-        #search.load_products()
-        #search.update_mapping()
-        print(search.get_suggestions('satisfyer'))
+        search.init_index()
+        # search.load_products()
+        # search.update_mapping()
+        # print(search.get_suggestions('satisfyer'))
