@@ -41,7 +41,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     volumes:
-      - "/home/search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+      - "/home/webshop-product-search/search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
     environment:
       - discovery.type=single-node
     networks:
