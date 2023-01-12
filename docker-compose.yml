@@ -1,16 +1,15 @@
 version: '3.7'
 services:
-  nginx-reverse-proxy:
-    image: "jwilder/nginx-proxy:latest"
+  nginx-proxy-manager:
+    image: "jc21/nginx-proxy-manager:latest"
     ports:
       - "8080:80"
+      - "81:81"
       - "444:443"
     volumes:
-      - "./nginx/html:/usr/share/nginx/html"
-      - "./nginx/dhparam:/etc/nginx/dhparam"
-      - "./nginx/vhost:/etc/nginx/vhost.d"
-      - "./nginx/certs:/etc/nginx/certs"
-      - "./nginx/run/docker.sock:/tmp/docker.sock:ro"
+      - "./nginx/data:/data"
+      - "./nginx/letsencrypt:/etc/letsencrypt"
+    restart: "always"
     depends_on:
       - cache-engine
       - search-engine
@@ -20,25 +19,7 @@ services:
     networks:
       reverse-proxy:
         aliases:
-          - nginx-reverse-proxy
-      aaa-network:
-  letsencrypt:
-    image: "jrcs/letsencrypt-nginx-proxy-companion:latest"
-    container_name: "nginx-reverse-proxy"
-    volumes:
-      - "./nginx/html:/usr/share/nginx/html"
-      - "./nginx/dhparam:/etc/nginx/dhparam"
-      - "./nginx/vhost:/etc/nginx/vhost.d"
-      - "./nginx/certs:/etc/nginx/certs"
-      - "./nginx/run/docker.sock:/var/run/docker.sock:ro"
-    environment:
-      NGINX_PROXY_CONTAINER: "nginx-reverse-proxy"
-      DEFAULT_EMAIL: "dfrigewski@gmail.com"
-    restart: "always"
-    networks:
-      reverse-proxy:
-        aliases:
-          - letsencrypt
+          - nginx-proxy-manager
       aaa-network:
   cache-engine:
     image: redis
@@ -48,7 +29,7 @@ services:
       - "./cache-engine/data:/data"
       - "./cache-engine/config:/etc/redis"
     environment:
-      - appendonly yes
+      - APPENDONLY=yes
     networks:
       cache-engine:
         aliases:
@@ -97,7 +78,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - "./web:/usr/share/nginx/html"
+      - "./web:/usr/share/nginx/data"
       - "./ssl/certs:/etc/nginx/ssl/certs"
     environment:
       - "HTTPS=true"
