@@ -1,0 +1,139 @@
+version: '3.7'
+services:
+  nginx-reverse-proxy:
+    image: "jwilder/nginx-proxy:latest"
+    ports:
+      - "8080:80"
+      - "444:443"
+    volumes:
+      - "./nginx/html:/usr/share/nginx/html"
+      - "./nginx/dhparam:/etc/nginx/dhparam"
+      - "./nginx/vhost:/etc/nginx/vhost.d"
+      - "./nginx/certs:/etc/nginx/certs"
+      - "./nginx/run/docker.sock:/tmp/docker.sock:ro"
+    depends_on:
+      - cache-engine
+      - search-engine
+      - redis-commander
+      - kibana
+      - api
+    networks:
+      reverse-proxy:
+        aliases:
+          - nginx-reverse-proxy
+      aaa-network:
+  letsencrypt:
+    image: "jrcs/letsencrypt-nginx-proxy-companion:latest"
+    container_name: "nginx-reverse-proxy"
+    volumes:
+      - "./nginx/html:/usr/share/nginx/html"
+      - "./nginx/dhparam:/etc/nginx/dhparam"
+      - "./nginx/vhost:/etc/nginx/vhost.d"
+      - "./nginx/certs:/etc/nginx/certs"
+      - "./nginx/run/docker.sock:/var/run/docker.sock:ro"
+    environment:
+      NGINX_PROXY_CONTAINER: "nginx-reverse-proxy"
+      DEFAULT_EMAIL: "dfrigewski@gmail.com"
+    restart: "always"
+    networks:
+      reverse-proxy:
+        aliases:
+          - letsencrypt
+      aaa-network:
+  cache-engine:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./cache-engine/data:/data"
+      - "./cache-engine/config:/etc/redis"
+    environment:
+      - appendonly yes
+    networks:
+      cache-engine:
+        aliases:
+          - cache-engine
+      aaa-network:
+  search-engine:
+    image: elasticsearch:7.17.8
+    ports:
+      - "9200:9200"
+    volumes:
+      - "./search-engine/data:/usr/share/elasticsearch/data"
+      - "./search-engine/config:/usr/share/elasticsearch/config"
+    environment:
+      - discovery.type=single-node
+    networks:
+      search-engine:
+        aliases:
+          - search-engine
+        internal: true
+      aaa-network:
+        aliases:
+          - search-engine
+    restart: always
+  api:
+    image: python:3.7
+    environment:
+      - FLASK_APP=api.py
+    ports:
+      - "5000:5000"
+    volumes:
+      - "./api:/app"
+    command: "python /app/app.py"
+    depends_on:
+      - search-engine
+      - cache-engine
+    networks:
+      api:
+        aliases:
+          - api
+        internal: true
+      aaa-network:
+        aliases:
+          - api
+    restart: always
+  web:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./web:/usr/share/nginx/html"
+      - "./ssl/certs:/etc/nginx/ssl/certs"
+    environment:
+      - "HTTPS=true"
+    networks:
+      web:
+        aliases:
+          - web
+          - aaa-network
+  redis-commander:
+    image: rediscommander/redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=cache-engine:6379
+    restart: always
+    networks:
+      - aaa-network
+  kibana:
+    image: kibana:7.17.8
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_URL=http://search-engine:9200
+    restart: always
+    networks:
+      - aaa-network
+
+networks:
+    reverse-proxy:
+      internal: true
+    cache-engine:
+      internal: true
+    search-engine:
+      internal: true
+    api:
+      internal: true
+    aaa-network:
