@@ -69,7 +69,7 @@ services:
     volumes:
       - pip37:/usr/local/lib/python3.7/site-packages
       - "./api:/app"
-    command: /usr/local/bin/python -m pip install --upgrade pip | pip install -r requirements.txt | "python /app/app.py"
+    command: /usr/local/bin/python -m pip install --upgrade pip && pip install -r requirements.txt && "python /app/app.py"
     depends_on:
       - search-engine
       - cache-engine
