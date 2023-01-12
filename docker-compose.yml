@@ -36,7 +36,7 @@ services:
           - cache-engine
       aaa-network:
   search-engine:
-    image: elasticsearch:7.17.8
+    image: docker.elastic.co/elasticsearch/elasticsearch:.17.8
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -46,7 +46,17 @@ services:
       - "./search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
 
     environment:
+      - xpack.security.enabled=false
       - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
     networks:
       search-engine:
         aliases:
@@ -100,7 +110,7 @@ services:
     networks:
       - aaa-network
   kibana:
-    image: kibana:7.17.8
+    image: docker.elastic.co/kibana/kibana:7.17.8
     ports:
       - "5601:5601"
     environment:
