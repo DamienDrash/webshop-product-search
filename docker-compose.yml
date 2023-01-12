@@ -69,11 +69,10 @@ services:
     volumes:
       - pip37:/usr/local/lib/python3.7/site-packages
       - "./api:/app"
-    command: "python /app/app.py"
+    command: pip install -r requirements.txt & "python /app/app.py"
     depends_on:
       - search-engine
       - cache-engine
-      - requirements
     networks:
       api:
         aliases:
@@ -82,13 +81,6 @@ services:
         aliases:
           - api
     restart: always
-  requirements:
-    image: python:3.7-alpine
-    volumes:
-      - pip37:/usr/local/lib/python3.7/site-packages
-      - ./api:/project
-    working_dir: /project
-    command: pip install -r requirements.txt
   web:
     image: nginx:latest
     ports:
