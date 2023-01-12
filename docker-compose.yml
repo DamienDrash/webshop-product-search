@@ -36,14 +36,12 @@ services:
           - cache-engine
       aaa-network:
   search-engine:
-    image: elasticsearch:.17.8
+    image: elasticsearch:7.17.8
     ports:
       - "9200:9200"
       - "9300:9300"
     volumes:
-      - "./search-engine/data:/usr/share/elasticsearch/data"
-      - "./search-engine/config:/usr/share/elasticsearch/config"
-      - "./search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+      - "/home/search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
     environment:
       - discovery.type=single-node
     networks:
