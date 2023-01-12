@@ -67,7 +67,6 @@ services:
       search-engine:
         aliases:
           - search-engine
-        internal: true
       aaa-network:
         aliases:
           - search-engine
@@ -88,7 +87,6 @@ services:
       api:
         aliases:
           - api
-        internal: true
       aaa-network:
         aliases:
           - api
@@ -129,11 +127,7 @@ services:
 
 networks:
     reverse-proxy:
-      internal: true
     cache-engine:
-      internal: true
     search-engine:
-      internal: true
     api:
-      internal: true
     aaa-network:
