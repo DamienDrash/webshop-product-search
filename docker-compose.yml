@@ -36,17 +36,22 @@ services:
           - cache-engine
       aaa-network:
   search-engine:
-    image: elasticsearch:8.6.0
-    container_name: search-engine
-    ports:
-      - target: 9200
-        published: 9200
-    volumes:
-      - "./search-engine/data:/usr/share/elasticsearch/data"
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0-SNAPSHOT
+    container_name: elasticsearch
     environment:
+      - network.host=0.0.0.0
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - cluster.name=docker-cluster
+      - node.name=cluster1-node1
+      - xpack.license.self_generated.type=basic
       - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
     networks:
       search-engine:
         aliases:
@@ -100,14 +105,16 @@ services:
     networks:
       - aaa-network
   kibana:
-    image: kibana:8.6.0
+    image: docker.elastic.co/kibana/kibana:8.0.0-SNAPSHOT
+    container_name: kibana
+    environment:
+     ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+     SERVER_HOSTS: 0.0.0.0
     ports:
       - "5601:5601"
-    environment:
-      - ELASTICSEARCH_URL=http://search-engine:9200
-    depends_on:
-      - search-engine
     restart: always
+    depends_on:
+      - elasticsearch
     networks:
       search-engine:
         aliases:
