@@ -36,7 +36,7 @@ services:
           - cache-engine
       aaa-network:
   search-engine:
-    image: elasticsearch/elasticsearch:.17.8
+    image: elasticsearch:.17.8
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -110,7 +110,7 @@ services:
     networks:
       - aaa-network
   kibana:
-    image: kibana/kibana:7.17.8
+    image: kibana:7.17.8
     ports:
       - "5601:5601"
     environment:
