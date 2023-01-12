@@ -1,11 +1,5 @@
 version: '3.7'
 services:
-  permissions:
-    build: .
-    command:
-      - sudo chown -R 1000:1000 /usr/share/elasticsearch/data
-      - sudo chown -R 1000:1000 /usr/share/elasticsearch/config
-      - sudo chown -R 1000:1000 /usr/share/elasticsearch/config/elasticsearch.yml
   nginx-proxy-manager:
     image: "jc21/nginx-proxy-manager:latest"
     ports:
@@ -17,7 +11,6 @@ services:
       - "./nginx/letsencrypt:/etc/letsencrypt"
     restart: "always"
     depends_on:
-      - permissions
       - cache-engine
       - search-engine
       - redis-commander
@@ -51,7 +44,9 @@ services:
       - "./search-engine/data:/usr/share/elasticsearch/data"
       - "./search-engine/config:/usr/share/elasticsearch/config"
       - "./search-engine/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-
+    command:
+      - sudo chown -R 1000:1000 /usr/share/elasticsearch/data
+      - sudo chown -R 1000:1000 /usr/share/elasticsearch/config
     environment:
       - xpack.security.enabled=false
       - discovery.type=single-node
