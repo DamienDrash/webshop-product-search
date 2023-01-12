@@ -37,6 +37,7 @@ services:
       aaa-network:
   search-engine:
     image: elasticsearch:7.17.8
+    container_name: search-engine
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -97,11 +98,13 @@ services:
     networks:
       - aaa-network
   kibana:
-    image: kibana:7.17.8
+    image: docker.elastic.co/kibana/kibana:8.6.0
     ports:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_URL=http://search-engine:9200
+    depends_on:
+      - search-engine
     restart: always
     networks:
       - aaa-network
