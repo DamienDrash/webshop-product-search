@@ -63,13 +63,13 @@ services:
   api:
     image: python:3.7
     environment:
-      - FLASK_APP=app.py
+      - FLASK_APP=./api/app.py
     ports:
       - "5000:5000"
     volumes:
       - pip37:/usr/local/lib/python3.7/site-packages
       - "./api:/api"
-    command: bash -c "/usr/local/bin/python -m pip install --upgrade pip && pip install -r /api/requirements.txt && python /api/app.py"
+    command: bash -c "/usr/local/bin/python -m pip install --upgrade pip && pip install -r /api/requirements.txt && flask run --host=0.0.0.0 --port=5000"
     depends_on:
       - search-engine
       - cache-engine
