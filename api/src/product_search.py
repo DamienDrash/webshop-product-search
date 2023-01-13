@@ -4,9 +4,15 @@ import elasticsearch
 from elasticsearch_dsl import connections
 import redis
 import configparser
+import os
+
+current_directory = os.getcwd()
+config_file = 'config.ini'
+if not os.path.exists(config_file):
+    config_file = os.path.join(current_directory, 'src', config_file)
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read(config_file)
 
 
 class ProductSearch:
