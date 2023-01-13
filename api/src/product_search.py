@@ -9,10 +9,13 @@ import os
 current_directory = os.getcwd()
 config_file = 'config.ini'
 if not os.path.exists(config_file):
-    config_file = os.path.join(current_directory, 'src', config_file)
-
+    config_file = os.path.join(current_directory, 'api', 'src', config_file)
+else:
+    config_file = os.path.join(current_directory, config_file)
+print(config_file)
 config = configparser.ConfigParser()
 config.read(config_file)
+print(config.sections())
 
 
 class ProductSearch:
